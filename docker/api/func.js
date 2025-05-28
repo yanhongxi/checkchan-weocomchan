@@ -208,24 +208,20 @@ exports.do_webhook = async( id, url, value, html, link, data ) =>
     }
 }
 
-exports.send_notify = async ( title, desp, sendkey, channel = -1, short = false)  =>
-{
+exports.send_notify = async (title, desp, sendkey, channel = -1, short = false)  => {
     try {
-        const form = new FormData();
-        if( channel >= 0 ) form.append( 'channel',parseInt(channel));
-        if( short ) form.append( 'short',short ); 
-        form.append( 'title',title ); 
-        form.append( 'desp',desp.substring(0,10000) + "\r\n\r\n" + "来自云端@"+ ip.address() ); 
-        const api = String(sendkey).startsWith('sctp') ? `https://${sendkey}.push.ft07.com/send` : `https://sctapi.ftqq.com/${sendkey}.send`
-        const response = await fetch( api, {
-            method: 'POST', 
-            body: form
-        }  );
+        // 构建 Wecomchan 的消息内容
+        const message = `${title}: ${desp.substring(0, 10000)} \r\n\r\n 来自云端@${ip.address()}`;
+        const api = `https://api.8ns.top:38438/test.php?sendkey=yanhongxi&&msg=${encodeURIComponent(message)}&&msg_type=text`;
+
+        const response = await fetch(api, {
+            method: 'GET'
+        });
 
         const data = await response.text();
-        return JSON.parse(data)||data;
+        return JSON.parse(data) || data;
     } catch (error) {
-        console.log("推送微信通知错误",error);
+        console.log("推送 Wecomchan 通知错误", error);
         return false;
     }
 }
